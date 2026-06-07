@@ -49,13 +49,13 @@ Manages .NET solutions and projects end-to-end using the `dotnet` CLI. Covers cr
 
 ## Required `.csproj` Metadata
 
-After creating or normalizing any project, the `.csproj` must contain exactly:
+After creating or normalizing any project, the `.csproj` must contain these elements (example only — substitute the actual project name, TFM, and Sdk):
 
 ```xml
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk"><!-- or Microsoft.NET.Sdk.Web, etc. -->
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework><!-- use latest stable installed TFM -->
 
     <RootNamespace>GeekShop.Checkout</RootNamespace>
     <AssemblyName>GeekShop.Checkout</AssemblyName>
@@ -67,10 +67,11 @@ After creating or normalizing any project, the `.csproj` must contain exactly:
 ```
 
 Rules:
+- `<TargetFramework>` must use the **latest stable installed TFM** identified via `dotnet --list-sdks` — not a fixed version.
 - `<RootNamespace>` and `<AssemblyName>` must match the project name exactly.
 - `<Nullable>` must be `enable`.
 - **Remove** `<ImplicitUsings>` if present.
-- The `Sdk` attribute must match the project type (e.g., `Microsoft.NET.Sdk.Web` for web APIs).
+- The `Sdk` attribute must match the project type: `Microsoft.NET.Sdk` for libraries/workers/console; `Microsoft.NET.Sdk.Web` for web APIs and MVC.
 
 ## Commands Reference
 
@@ -191,7 +192,7 @@ Run this checklist before creating or adding anything:
    - `dotnet new <template> -n <ProjectName> -o src/<ProjectName> --framework <tfm>`
    - `dotnet sln <name>.slnx add src/<ProjectName>/<ProjectName>.csproj`
    - Normalize `.csproj` metadata.
-5. Add required cross-project references (Workflow 4).
+5. Add required cross-project references (Workflow 5).
 6. Verify: `dotnet restore && dotnet build` — for each executable project in the solution, also run `dotnet run --no-build --no-launch-profile --project src/<ProjectName>/<ProjectName>.csproj`, confirm startup, then stop.
 
 ### 3. Add Existing Project to Solution
