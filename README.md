@@ -1,4 +1,5 @@
-# agent-assets
+# Agent Assets
+
 AI Agent Development Assets
 
 
@@ -22,10 +23,16 @@ AI Agent Development Assets
 Here are some of the skills created by me, or inspired by other communities' skills, and adapted by me for my needs and use cases.
 
 #### .NET Skills
-* [.NET Project Lifecycle Manager](./.agents/skills/dotnet/dotnet-project-lifecycle/SKILL.md)
-  * A skill to manage the full lifecycle of .NET projects and solutions: create single- or multi-project solutions, add/remove projects and references, and normalize project metadata.
+* [NuGet Manager](./.agents/skills/dotnet/dotnet-nuget-manager/SKILL.md) - A skill to correctly manage NuGet packages in a .NET project, including the correct way an agent should add, update, or remove a NuGet package. Skill based on [this one](skills/nuget-manager/SKILL.md) and modified by me;
+
+
+### Other skills (Famous and Relevant)
+Other famous and relevant skills that I find useful:
+
+#### Agents
+* [Skill Creator](https://github.com/anthropics/skills/tree/main/skills/skill-creator) - A skill to help create, improve, test and benchmark skills
 
 
 ### Other Repositories
-* [.NET Skills](https://github.com/dotnet/skills)
-* [Awesome GitHub Copilot](https://github.com/github/awesome-copilot)
+* [.NET Skills (Official .NET Repo)](https://github.com/dotnet/skills)
+* [Awesome GitHub Copilot (Official GitHub Repo)](https://github.com/github/awesome-copilot)
