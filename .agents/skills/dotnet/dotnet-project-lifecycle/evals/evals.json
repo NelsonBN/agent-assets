@@ -1,0 +1,82 @@
+{
+  "skill_name": "dotnet-project-lifecycle",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a new .NET solution named 'geek-shop' with a single Web API project named 'GeekShop.Catalog.Api' using the latest stable .NET framework.",
+      "expected_output": "A geek-shop.slnx solution file in the repo root, a src/GeekShop.Catalog.Api/ directory with a correctly normalized .csproj, and a successful dotnet build.",
+      "expectations": [
+        "A solution file named geek-shop.slnx is created at the repo root using the slnx format",
+        "The project is created under src/GeekShop.Catalog.Api/",
+        "The .csproj contains <AssemblyName>GeekShop.Catalog.Api</AssemblyName>",
+        "The .csproj contains <RootNamespace>GeekShop.Catalog.Api</RootNamespace>",
+        "The .csproj contains <Nullable>enable</Nullable>",
+        "The .csproj does NOT contain <ImplicitUsings>",
+        "The project is added to geek-shop.slnx via dotnet sln add",
+        "dotnet restore and dotnet build succeed without errors"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Create a new .NET solution named 'geek-shop' with three projects following a layered architecture: GeekShop.Catalog.Api (webapi), GeekShop.Catalog.Application (classlib), and GeekShop.Catalog.Domain (classlib). The Api project should reference Application, and Application should reference Domain.",
+      "expected_output": "A geek-shop.slnx solution with all three projects in src/, all .csproj files normalized, correct project references established, and a successful dotnet build.",
+      "expectations": [
+        "Solution file geek-shop.slnx is created at the repo root",
+        "Three projects exist under src/: GeekShop.Catalog.Api, GeekShop.Catalog.Application, GeekShop.Catalog.Domain",
+        "All three projects are added to geek-shop.slnx",
+        "Each .csproj has AssemblyName and RootNamespace matching the project name",
+        "Each .csproj has Nullable set to enable and no ImplicitUsings",
+        "GeekShop.Catalog.Api.csproj references GeekShop.Catalog.Application.csproj via dotnet add reference",
+        "GeekShop.Catalog.Application.csproj references GeekShop.Catalog.Domain.csproj via dotnet add reference",
+        "dotnet restore and dotnet build succeed without errors"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Given a solution geek-shop.slnx with two existing projects GeekShop.Catalog.Api and GeekShop.Catalog.Application in src/, add a project reference so that GeekShop.Catalog.Api depends on GeekShop.Catalog.Application.",
+      "expected_output": "A ProjectReference entry for GeekShop.Catalog.Application appears in GeekShop.Catalog.Api.csproj, added via the CLI, and the solution builds successfully.",
+      "expectations": [
+        "dotnet add reference is used (not manual .csproj editing)",
+        "GeekShop.Catalog.Api.csproj contains a ProjectReference to GeekShop.Catalog.Application.csproj",
+        "dotnet restore and dotnet build succeed without errors"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Given a solution geek-shop.slnx with three projects (GeekShop.Catalog.Api, GeekShop.Catalog.Application, GeekShop.Catalog.Domain) where Api references Application and Application references Domain, remove the GeekShop.Catalog.Domain project from the solution without deleting its source files.",
+      "expected_output": "GeekShop.Catalog.Domain is removed from the solution via the CLI. The domain source files still exist on disk. The removal of the dependent reference in Application is handled first.",
+      "expectations": [
+        "dotnet sln remove is used to remove GeekShop.Catalog.Domain from the solution",
+        "The reference from GeekShop.Catalog.Application to GeekShop.Catalog.Domain is removed before or during the workflow",
+        "The src/GeekShop.Catalog.Domain/ directory still exists after removal",
+        "dotnet restore and dotnet build succeed without errors"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "An existing project src/MyApp.Api/ has a .csproj where AssemblyName is 'MyApp', RootNamespace is missing, ImplicitUsings is set to enable, and the folder is named 'MyApp.Api' but should be 'GeekShop.Api'. Normalize the project to match the conventions defined in the skill.",
+      "expected_output": "The .csproj is updated with correct AssemblyName, RootNamespace, Nullable, and ImplicitUsings removed. If folder rename is required, the solution references are updated via the CLI.",
+      "expectations": [
+        "AssemblyName is updated to match the project name",
+        "RootNamespace is added and matches the project name",
+        "ImplicitUsings is removed from the .csproj",
+        "Nullable is set to enable",
+        "Normalization is performed as a warn-only workflow (user is not blocked if they decline a step)",
+        "dotnet restore and dotnet build succeed without errors"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "The repository root contains a legacy geek-shop.sln file (no .slnx). Create a new project GeekShop.Orders.Api (webapi) and add it to the solution using the correct workflow.",
+      "expected_output": "The .sln is migrated to .slnx first, then the new project is created and added to the .slnx solution. The old .sln file is deleted.",
+      "expectations": [
+        "dotnet sln migrate is used to convert geek-shop.sln to geek-shop.slnx",
+        "The old geek-shop.sln file is deleted after successful migration",
+        "The new project GeekShop.Orders.Api is created under src/GeekShop.Orders.Api/",
+        "The project is added to geek-shop.slnx via dotnet sln add",
+        "The .csproj is normalized with correct AssemblyName, RootNamespace, and Nullable",
+        "dotnet restore and dotnet build succeed without errors"
+      ]
+    }
+  ]
+}
