@@ -7,6 +7,13 @@ AI Agent Development Assets
 ## Skills
 
 
+### Enabling Skills in your tool
+
+#### VS Code
+1. Install the [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) extension;
+2. Enable the [chat.useAgentSkills](vscode://settings/chat.useAgentSkills) setting and set it to `true`.
+
+
 ### Guidelines and Best Practices
 * [Agent Skills Guidelines and Best Practices](https://agentskills.io)
   * [Claude Documentation](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview)
