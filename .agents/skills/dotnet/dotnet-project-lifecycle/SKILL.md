@@ -1,22 +1,13 @@
 ---
 name: dotnet-project-lifecycle
-description: >-
-  Full lifecycle management of .NET solutions and projects via the CLI: create single- or
-  multi-project solutions, add/remove projects from .slnx/.sln, add/remove project references,
-  and normalize assembly name, namespace, and folder structure.
-  WHEN: create dotnet project, new solution, add project to solution, remove project from solution,
-  add project reference, remove project reference, normalize project, rename assembly, fix namespace,
-  dotnet sln, dotnet new, multi-project solution, single-project solution, project structure,
-  clean architecture, layered architecture, class library, webapi, worker service.
+description: Full lifecycle management of .NET solutions and projects via the CLI, create single-project or multi-project solutions, add/remove projects from .slnx/.sln, add/remove project references, and normalize assembly name, namespace, and folder structure. WHEN, create dotnet project, new solution, add project to solution, remove project from solution, add project reference, remove project reference, normalize project, rename assembly, fix namespace, dotnet sln, dotnet new, multi-project solution, single-project solution, project structure, layered architecture, class library, webapi, worker service
 ---
 
 # .NET Project Lifecycle Manager
 
 ## Overview
 
-Manages .NET solutions and projects end-to-end using the `dotnet` CLI. Covers creation of
-single- and multi-project solutions, solution membership, cross-project references, and project
-normalization. CLI-first — manual file editing is restricted to metadata normalization only.
+Manages .NET solutions and projects end-to-end using the `dotnet` CLI. Covers creation of single-project or multi-project solutions, solution membership, cross-project references, and project normalization. CLI-first — manual file editing is restricted to metadata normalization only.
 
 ## Prerequisites
 
@@ -31,22 +22,18 @@ normalization. CLI-first — manual file editing is restricted to metadata norma
 
 ## Out of Scope
 
-- CI/CD pipeline setup and deployment automation.
+- CI/CD pipeline setup.
+- Deployment automation.
 
 ## Core Rules
 
 - **NEVER** create `.csproj`, `.sln`, or `.slnx` files manually. **ALWAYS** use `dotnet` CLI.
-- **NEVER** edit `.slnx`/`.sln` to add or remove projects. Use `dotnet sln add/remove`.
-- **NEVER** edit `.csproj` to add or remove references. Use `dotnet add/remove reference`.
+- **NEVER** edit `.slnx`/`.sln` to add or remove projects. **ALWAYS** use `dotnet sln add/remove`.
+- **NEVER** edit `.csproj` to add or remove references. **ALWAYS** use `dotnet add/remove reference`.
 - **DIRECT EDITING** of `.csproj` is only permitted to normalize metadata (`RootNamespace`, `AssemblyName`, `Nullable`, `ImplicitUsings`).
 - **ALWAYS** use the latest stable installed TFM when creating projects.
 - **ALWAYS** prefer `.slnx` format. Migrate `.sln` → `.slnx` when encountered.
 - **ALWAYS** place projects in a `src/` subdirectory.
-
-## On-Demand Policy
-
-Only load additional references, scripts, or assets when genuinely required by the task.
-Do not create helper scripts, assets, or load references speculatively.
 
 ## Naming Conventions
 
@@ -144,10 +131,23 @@ dotnet add src/<A>/<A>.csproj reference src/<B>/<B>.csproj
 dotnet remove src/<A>/<A>.csproj reference src/<B>/<B>.csproj
 ```
 
-### Build and verify
+### Project type classification
+
+| Type | Templates | Verification |
+|------|-----------|-------------|
+| **Executable** | `webapi`, `worker`, `console`, `grpc`, `mvc`, `blazor`, `blazorserver`, `blazorwasm` | build + run |
+| **Library** | `classlib`, `xunit`, `nunit`, `mstest` | build only |
+
+### Build and verify (library projects)
 ```powershell
 dotnet restore && dotnet build
 ```
+
+### Build, verify, and run (executable projects)
+```powershell
+dotnet restore && dotnet build && dotnet run --no-build --no-launch-profile --project src/<ProjectName>/<ProjectName>.csproj
+```
+`dotnet run` keeps the process alive — confirm startup succeeds (no error in output), then stop it (Ctrl+C or `Stop-Process`).
 
 ## Solution Detection Decision Table
 
@@ -160,6 +160,16 @@ Run before any workflow that touches a solution:
 | Both found | Use `.slnx`, delete `.sln` |
 | Neither found | Create: `dotnet new sln --format slnx -n <name>` |
 
+## Preflight Checklist (Mandatory)
+
+Run this checklist before creating or adding anything:
+
+1. Confirm repository root and current directory.
+2. Detect existing solution files (`*.slnx` or `*.sln`).
+3. Check for path/name collisions for the target project directory and `.csproj` file.
+4. Identify latest stable installed SDK/TFM and use it for project creation.
+5. Confirm template availability with `dotnet new --list` when the template name is uncertain.
+
 ## Workflows
 
 ### 1. Create Single-Project Solution
@@ -170,7 +180,7 @@ Run before any workflow that touches a solution:
 4. `dotnet new <template> -n <ProjectName> -o src/<ProjectName> --framework <tfm>`
 5. `dotnet sln <name>.slnx add src/<ProjectName>/<ProjectName>.csproj`
 6. Normalize `.csproj` metadata (see Required `.csproj` Metadata).
-7. `dotnet restore && dotnet build` — confirm success.
+7. Verify: `dotnet restore && dotnet build` — for executable project types, also run `dotnet run --no-build --no-launch-profile --project src/<ProjectName>/<ProjectName>.csproj` and confirm startup succeeds, then stop.
 
 ### 2. Create Multi-Project Solution
 
@@ -182,14 +192,14 @@ Run before any workflow that touches a solution:
    - `dotnet sln <name>.slnx add src/<ProjectName>/<ProjectName>.csproj`
    - Normalize `.csproj` metadata.
 5. Add required cross-project references (Workflow 4).
-6. `dotnet restore && dotnet build` — confirm all projects build.
+6. Verify: `dotnet restore && dotnet build` — for each executable project in the solution, also run `dotnet run --no-build --no-launch-profile --project src/<ProjectName>/<ProjectName>.csproj`, confirm startup, then stop.
 
 ### 3. Add Existing Project to Solution
 
 1. `Get-ChildItem -Path . -Filter *.sln*` — apply decision table.
 2. Confirm `.csproj` exists at expected path.
 3. `dotnet sln <name>.slnx add <path/to/Project.csproj>`
-4. `dotnet restore && dotnet build`
+4. Verify: `dotnet restore && dotnet build` — for executable projects, also run `dotnet run --no-build --no-launch-profile --project src/<ProjectName>/<ProjectName>.csproj`, confirm startup, then stop.
 
 ### 4. Remove Project from Solution
 
@@ -222,4 +232,4 @@ Warn only — do not abort if the user declines a normalization step.
    - Rename the folder.
    - `dotnet sln <name>.slnx remove <old-path>/<Project>.csproj`
    - `dotnet sln <name>.slnx add <new-path>/<Project>.csproj`
-7. `dotnet restore && dotnet build`
+7. Verify: `dotnet restore && dotnet build` — for executable projects, also run `dotnet run --no-build --no-launch-profile --project src/<ProjectName>/<ProjectName>.csproj`, confirm startup, then stop.
