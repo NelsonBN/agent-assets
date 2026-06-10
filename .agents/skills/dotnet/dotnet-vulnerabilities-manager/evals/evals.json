@@ -1,0 +1,78 @@
+{
+  "skill_name": "dotnet-vulnerabilities-manager",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "My .NET 8 Web API project at src/Api/Api.csproj has Newtonsoft.Json 12.0.1 installed. I was told it is affected by CVE-2024-21907 (GHSA-5crp-q978-2vqf) which is a high-severity type confusion issue. Can you fix this vulnerability?",
+      "expected_output": "The skill runs dotnet list package --vulnerable --include-transitive to confirm the finding, identifies Newtonsoft.Json as a direct reference, uses dotnet add package to upgrade it to the patched version, runs dotnet restore, and re-scans to confirm the vulnerability is gone. Because this is a direct package upgrade, no security-fix comment is added.",
+      "files": [],
+      "expectations": [
+        "The skill runs 'dotnet list package --vulnerable --include-transitive' to detect the vulnerability",
+        "The skill uses 'dotnet add package Newtonsoft.Json' (not direct XML edit) to perform the upgrade",
+        "The skill runs 'dotnet restore' after upgrading",
+        "The skill re-runs the vulnerability scan to confirm the advisory is resolved",
+        "No security-fix comment is required for direct package upgrades"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "My solution has a transitive vulnerability: System.Net.Http 4.3.0 is pulled in by Microsoft.AspNet.WebApi.Client and flagged for CVE-2017-0248 (GHSA-7jgv-x5wq-7vx7), a TLS validation bypass. System.Net.Http is NOT a direct reference in my project src/Worker/Worker.csproj. Please fix this.",
+      "expected_output": "The skill confirms System.Net.Http is transitive (not in direct refs), determines the safe patched version (4.3.4), adds it as an explicit direct reference via dotnet add package, restores, re-scans to confirm vulnerability is gone, and annotates the new PackageReference with a multi-line security-fix: transitive comment containing advisory IDs, transitive-package, pulled-by (Microsoft.AspNet.WebApi.Client), fixed-version, and reason fields.",
+      "files": [],
+      "expectations": [
+        "The skill confirms System.Net.Http is a transitive (not direct) dependency before acting",
+        "The skill uses 'dotnet add package System.Net.Http' to add an explicit direct reference forcing the safe version",
+        "The skill does NOT use dotnet remove or any command that would remove the parent dependency",
+        "The skill runs 'dotnet restore' after the change",
+        "The skill re-scans with '--include-transitive' to confirm the vulnerability is resolved",
+        "A security-fix comment with 'security-fix: transitive' is added above the new PackageReference",
+        "The comment includes a 'transitive-package' field identifying System.Net.Http",
+        "The comment includes a 'pulled-by' field identifying the parent dependency",
+        "The comment includes advisory, fixed-version, and reason fields"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Six months ago we added System.Formats.Asn1 version 6.0.1 explicitly to our project src/Gateway/Gateway.csproj to fix a transitive CVE. The comment in csproj says it was pulled by Microsoft.AspNetCore.Authentication.JwtBearer. That package has since been upgraded in our project to version 8.0.10. Please check if the System.Formats.Asn1 override is still needed and remove it if it's safe to do so.",
+      "expected_output": "The skill locates the security-fix: transitive comment for System.Formats.Asn1, attempts to remove the package via dotnet remove package, runs dotnet restore and dotnet list package --vulnerable --include-transitive to verify no vulnerability reappears. Because the parent package now bundles a safe version, the scan is clean and the override is permanently removed.",
+      "files": [],
+      "expectations": [
+        "The skill locates the existing security-fix: transitive comment in the csproj to identify the stale override",
+        "The skill uses 'dotnet remove package System.Formats.Asn1' to attempt removal (not a direct XML edit)",
+        "The skill runs 'dotnet restore' after removal",
+        "The skill re-scans with '--include-transitive' to verify no vulnerability reappears",
+        "If the scan is clean, the override is permanently removed without requiring manual confirmation",
+        "If the vulnerability reappears after removal, the skill re-adds the package with 'dotnet add package' and reports that the override is still required"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Can you do a full vulnerability audit of my solution MyApp.slnx and fix everything you find? I have both direct and transitive vulnerabilities according to the Dependabot alerts at https://github.com/acme/myapp/security/dependabot.",
+      "expected_output": "The skill runs a full solution scan, triages findings into direct and transitive categories, remediates each one sequentially (updating direct packages and adding explicit references for transitive ones), annotates only transitive override changes with security-fix comments, and runs a final scan to confirm the solution is clean. It also attempts to look up the Dependabot alerts URL to enrich findings with GHSA IDs, severity, and patched version information.",
+      "files": [],
+      "expectations": [
+        "The skill runs 'dotnet list MyApp.slnx package --vulnerable --include-transitive' as the primary scan",
+        "The skill processes both direct and transitive vulnerabilities",
+        "The skill remediates direct vulnerabilities with 'dotnet add package' upgrades",
+        "The skill remediates transitive vulnerabilities by adding explicit direct references via 'dotnet add package'",
+        "Transitive overrides receive security-fix comments; direct upgrades do not",
+        "The skill runs a final re-scan to confirm all vulnerabilities are resolved",
+        "The skill attempts to enrich findings with advisory data from the provided Dependabot URL or GitHub Advisory Database"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "I have a solution using Central Package Management (Directory.Packages.props). The scan shows Microsoft.Data.SqlClient 4.0.0 is vulnerable to GHSA-98g6-xh36-x2p7. What is the patched version and can you fix it while respecting the CPM setup?",
+      "expected_output": "The skill detects the Directory.Packages.props file, treats it as a CPM project, looks up the patched version for Microsoft.Data.SqlClient from the GHSA advisory record or NuGet, updates the version in Directory.Packages.props (direct file edit since CLI does not manage CPM versions), runs dotnet restore, and confirms the vulnerability is gone. Because this is a direct package upgrade, no security-fix comment is added.",
+      "files": [],
+      "expectations": [
+        "The skill detects the presence of Directory.Packages.props and treats the project as using Central Package Management",
+        "The skill looks up GHSA-98g6-xh36-x2p7 to determine the patched version of Microsoft.Data.SqlClient",
+        "The version is updated in Directory.Packages.props rather than in a .csproj file",
+        "No security-fix comment is required for direct package upgrades in CPM projects",
+        "The skill runs 'dotnet restore' to verify the change is valid",
+        "The skill re-runs the vulnerability scan to confirm the advisory is resolved"
+      ]
+    }
+  ]
+}
