@@ -10,6 +10,23 @@ Use these sources to enrich a vulnerability finding with advisory details (sever
 
 When the user provides a GitHub repository URL or Dependabot alert, use the following patterns to retrieve alert details.
 
+If the user does not provide a Dependabot URL, derive it from git remotes first:
+
+```powershell
+git remote -v
+```
+
+Derivation rules:
+- Prefer remote `origin` when it points to GitHub.
+- If `origin` is not GitHub, select another GitHub remote if available.
+- Support both remote formats:
+  - `https://github.com/<owner>/<repo>.git`
+  - `git@github.com:<owner>/<repo>.git`
+- Extract `<owner>/<repo>` and construct:
+  - `https://github.com/<owner>/<repo>/security/dependabot`
+
+If no GitHub remote exists, git is unavailable, or parsing fails, skip Dependabot lookup and continue with GitHub Advisory Database and NuGet advisory sources.
+
 ### Dependabot alerts page
 
 ```
@@ -165,6 +182,6 @@ When sources provide conflicting patched-version information, use this priority:
 1. `dotnet list package --vulnerable` output (most authoritative for the local project's resolved dependency graph).
 2. GitHub Advisory Database `firstPatchedVersion.identifier` for the affected NuGet package.
 3. NuGet Registration API `vulnerabilities[].advisoryUrl` + related advisory page.
-4. Dependabot alert `security_vulnerability.first_patched_version.identifier`.
+4. Dependabot alert `security_vulnerability.first_patched_version.identifier` (from user-provided or git-remote-derived URL).
 
 If all agree, proceed with confidence. If they disagree, use the highest patched version to be safe, and note the discrepancy in the `reason` field of the security-fix comment.

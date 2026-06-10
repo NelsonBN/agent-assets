@@ -48,7 +48,7 @@
     {
       "id": 4,
       "prompt": "Can you do a full vulnerability audit of my solution MyApp.slnx and fix everything you find? I have both direct and transitive vulnerabilities according to the Dependabot alerts at https://github.com/acme/myapp/security/dependabot.",
-      "expected_output": "The skill runs a full solution scan, triages findings into direct and transitive categories, remediates each one sequentially (updating direct packages and adding explicit references for transitive ones), annotates only transitive override changes with security-fix comments, and runs a final scan to confirm the solution is clean. It also attempts to look up the Dependabot alerts URL to enrich findings with GHSA IDs, severity, and patched version information.",
+      "expected_output": "The skill runs a full solution scan, triages findings into direct and transitive categories, remediates each one sequentially (updating direct packages and adding explicit references for transitive ones), annotates only transitive override changes with security-fix comments, and runs a final scan to confirm the solution is clean. It enriches findings with Dependabot advisory data either from the user-provided URL or, when no URL is provided, by running git remote -v to detect GitHub hosting and constructing https://github.com/<owner>/<repo>/security/dependabot.",
       "files": [],
       "expectations": [
         "The skill runs 'dotnet list MyApp.slnx package --vulnerable --include-transitive' as the primary scan",
@@ -57,7 +57,8 @@
         "The skill remediates transitive vulnerabilities by adding explicit direct references via 'dotnet add package'",
         "Transitive overrides receive security-fix comments; direct upgrades do not",
         "The skill runs a final re-scan to confirm all vulnerabilities are resolved",
-        "The skill attempts to enrich findings with advisory data from the provided Dependabot URL or GitHub Advisory Database"
+        "The skill attempts to enrich findings with advisory data from a provided Dependabot URL, or derives the Dependabot URL from 'git remote -v' when missing and the repository is hosted on GitHub",
+        "When no GitHub remote can be found or parsed, the skill continues enrichment via GitHub Advisory Database/NuGet sources without blocking remediation"
       ]
     },
     {
