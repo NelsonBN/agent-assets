@@ -23,6 +23,7 @@ AI Agent Development Assets
 Here are some of the skills created by me, or inspired by other communities' skills, and adapted by me for my needs and use cases.
 
 #### .NET Skills
+* [.NET Project Manager](./.agents/skills/dotnet/dotnet-project-manager/SKILL.md) - A skill to manage .NET project files and solution structure, including creating, updating, and organizing projects and references;
 * [NuGet Manager](./.agents/skills/dotnet/dotnet-nuget-manager/SKILL.md) - A skill to correctly manage NuGet packages in a .NET project, including the correct way an agent should add, update, or remove a NuGet package. Skill based on [this one](skills/nuget-manager/SKILL.md) and modified by me;
 * [NuGet Vulnerabilities Manager](./.agents/skills/dotnet/dotnet-vulnerabilities-manager/SKILL.md) - A skill to detect and fix NuGet security vulnerabilities in .NET projects. Covers direct and transitive CVE/GHSA remediation via dotnet CLI, standardized security-fix traceability comments in project files, external advisory lookup (GitHub Dependabot, GitHub Advisory Database, NuGet advisories), and automatic cleanup of stale transitive overrides.
 
