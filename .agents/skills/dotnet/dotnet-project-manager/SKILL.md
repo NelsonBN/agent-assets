@@ -1,9 +1,9 @@
 ---
-name: dotnet-project-lifecycle
-description: Full lifecycle management of .NET solutions and projects via the CLI, create single-project or multi-project solutions, add/remove projects from .slnx/.sln, add/remove project references, and normalize assembly name, namespace, and folder structure. WHEN, create dotnet project, new solution, add project to solution, remove project from solution, add project reference, remove project reference, normalize project, rename assembly, fix namespace, dotnet sln, dotnet new, multi-project solution, single-project solution, project structure, layered architecture, class library, webapi, worker service
+name: dotnet-project-manager
+description: Full management of .NET solutions and projects via the CLI, create single-project or multi-project solutions, add/remove projects from .slnx/.sln, add/remove project references, and normalize assembly name, namespace, and folder structure. WHEN, create dotnet project, new solution, add project to solution, remove project from solution, add project reference, remove project reference, normalize project, rename assembly, fix namespace, dotnet sln, dotnet new, multi-project solution, single-project solution, project structure, layered architecture, class library, webapi, worker service
 ---
 
-# .NET Project Lifecycle Manager
+# .NET Project Manager
 
 ## Overview
 
