@@ -65,6 +65,23 @@ Parse the output and build a triage table:
 
 If the user provides a GitHub Dependabot URL (e.g., `https://github.com/owner/repo/security/dependabot`) or mentions a GHSA/CVE ID, also read [advisory-sources.md](references/advisory-sources.md) to enrich the finding with the full advisory before remediating.
 
+If the user does NOT provide a Dependabot URL, attempt to derive it from git remotes:
+
+```powershell
+git remote -v
+```
+
+Use these rules:
+- Prefer `origin` when it points to GitHub.
+- If `origin` is not GitHub, use another GitHub remote if one exists.
+- Accept both HTTPS and SSH GitHub remote formats:
+   - `https://github.com/<owner>/<repo>.git`
+   - `git@github.com:<owner>/<repo>.git`
+- Normalize to `owner/repo` and construct:
+   - `https://github.com/<owner>/<repo>/security/dependabot`
+
+If git is unavailable, the folder is not a git repo, or no GitHub remote can be parsed, skip Dependabot enrichment and continue remediation using local scan output plus GitHub Advisory Database/NuGet advisory sources.
+
 ---
 
 ## Phase 2: Triage
@@ -182,7 +199,7 @@ If `dotnet build` fails after a package update, investigate compatibility before
 ## External Advisory Enrichment
 
 Before remediating, or when a user provides a GHSA/CVE ID without specifying a safe version, read [advisory-sources.md](references/advisory-sources.md) for lookup instructions for:
-- **GitHub Dependabot** alerts page (project-specific affected versions and patched version per alert).
+- **GitHub Dependabot** alerts page (project-specific affected versions and patched version per alert). If no URL is provided, derive it from `git remote -v` when the repository is hosted on GitHub.
 - **GitHub Advisory Database** (GHSA canonical records with patched-version ranges).
 - **NuGet advisory pages** (per-package advisory metadata and recommended version).
 
