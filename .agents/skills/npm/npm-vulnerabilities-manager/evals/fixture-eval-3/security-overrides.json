@@ -1,0 +1,12 @@
+{
+  "overrides": [
+    {
+      "package": "ansi-regex",
+      "override-type": "transitive",
+      "advisory": "GHSA-93q8-gq69-wqmw",
+      "pulled-by": "jest-circus >= 27.0.0",
+      "fixed-version": "5.0.1",
+      "reason": "Regular expression denial of service (ReDoS) vulnerability; explicit override forces safe transitive version."
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "eval-5-app",
+  "version": "1.0.0",
+  "description": "Workspace package with htmlparser2 which depends on vulnerable nth-check",
+  "dependencies": {
+    "css-select": "2.1.0"
+  }
+}

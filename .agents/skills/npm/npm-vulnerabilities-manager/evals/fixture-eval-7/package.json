@@ -1,0 +1,8 @@
+{
+  "name": "eval-7-project",
+  "version": "1.0.0",
+  "description": "Test: follow-redirects CVE-2023-26159, determine direct vs transitive and apply fix",
+  "dependencies": {
+    "follow-redirects": "1.14.8"
+  }
+}

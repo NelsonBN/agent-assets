@@ -1,0 +1,11 @@
+{
+  "name": "eval-8-project",
+  "version": "1.0.0",
+  "description": "Test: update existing json5 override from 1.0.2 to 2.2.3 (no duplicate annotation)",
+  "dependencies": {
+    "mocha": "9.2.2"
+  },
+  "overrides": {
+    "json5": "1.0.2"
+  }
+}

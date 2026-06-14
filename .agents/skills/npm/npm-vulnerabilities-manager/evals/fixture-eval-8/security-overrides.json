@@ -1,0 +1,12 @@
+{
+  "overrides": [
+    {
+      "package": "json5",
+      "override-type": "transitive",
+      "advisory": "CVE-2022-46175",
+      "pulled-by": "mocha >= 9.0.0",
+      "fixed-version": "1.0.2",
+      "reason": "Prototype pollution vulnerability in json5 via __proto__ property; explicit override forces safe transitive version."
+    }
+  ]
+}

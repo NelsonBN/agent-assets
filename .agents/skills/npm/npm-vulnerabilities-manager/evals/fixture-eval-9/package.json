@@ -1,0 +1,13 @@
+{
+  "name": "eval-9-project",
+  "version": "1.0.0",
+  "description": "Test: clean npm project for post-fix validation workflow",
+  "scripts": {
+    "test": "node test.js",
+    "build": "node build.js",
+    "start": "node start.js"
+  },
+  "dependencies": {
+    "lodash": "4.18.1"
+  }
+}

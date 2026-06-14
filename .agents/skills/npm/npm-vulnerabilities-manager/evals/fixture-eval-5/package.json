@@ -1,0 +1,9 @@
+{
+  "name": "eval-5-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Test: yarn monorepo workspace with nth-check transitive CVE via htmlparser2",
+  "workspaces": [
+    "packages/*"
+  ]
+}
