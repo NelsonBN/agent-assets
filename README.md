@@ -28,7 +28,7 @@ Here are some of the skills created by me, or inspired by other communities' ski
 * [NuGet Vulnerabilities Manager](./.agents/skills/dotnet/dotnet-vulnerabilities-manager/SKILL.md) - A skill to detect and fix NuGet security vulnerabilities in .NET projects. Covers direct and transitive CVE/GHSA remediation via dotnet CLI, standardized security-fix traceability comments in project files, external advisory lookup (GitHub Dependabot, GitHub Advisory Database, NuGet advisories), and automatic cleanup of stale transitive overrides.
 
 #### NPM Skills
-* [NPM Vulnerabilities Manager](./.agents/skills/npm/npm-vulnerabilities-manager/SKILL.md) - A skill to detect and fix NPM security vulnerabilities in JavaScript/TypeScript projects. Covers direct and transitive CVE/GHSA remediation via npm CLI, standardized security-fix traceability comments in package.json files, external advisory lookup (GitHub Dependabot, GitHub Advisory Database, npm advisories), and automatic cleanup of stale transitive overrides.
+* [NPM Vulnerabilities Manager](./.agents/skills/npm/npm-vulnerabilities-manager/SKILL.md) - A skill to detect and fix NPM security vulnerabilities in JavaScript/TypeScript projects. Covers direct and transitive CVE/GHSA remediation via npm/yarn/pnpm CLI, standardized security-fix traceability annotations in security-overrides.json, external advisory lookup (GitHub Dependabot, GitHub Advisory Database, npm advisories), and automatic cleanup of stale transitive overrides.
 
 
 ### Other skills (Famous and Relevant)
