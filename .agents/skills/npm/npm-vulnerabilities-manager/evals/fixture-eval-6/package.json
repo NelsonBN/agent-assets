@@ -1,0 +1,8 @@
+{
+  "name": "eval-6-project",
+  "version": "1.0.0",
+  "description": "Test: pnpm project with mocha pulling vulnerable minimist (transitive dependency)",
+  "dependencies": {
+    "mocha": "7.0.0"
+  }
+}

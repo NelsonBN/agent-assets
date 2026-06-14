@@ -1,0 +1,8 @@
+{
+  "name": "eval-2-project",
+  "version": "1.0.0",
+  "description": "Test project: minimist transitive CVE via mocha 7",
+  "dependencies": {
+    "mocha": "7.0.0"
+  }
+}

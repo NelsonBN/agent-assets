@@ -1,0 +1,9 @@
+{
+  "name": "eval-4-project",
+  "version": "1.0.0",
+  "description": "Test: full audit with both direct (lodash 4.17.4) and transitive (minimist via mocha 7) vulnerabilities",
+  "dependencies": {
+    "lodash": "4.17.4",
+    "mocha": "7.0.0"
+  }
+}

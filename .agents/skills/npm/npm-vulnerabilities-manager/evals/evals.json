@@ -1,0 +1,141 @@
+{
+  "skill_name": "npm-vulnerabilities-manager",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "My Node.js project has lodash 4.17.4 installed as a direct dependency. I was told it is affected by CVE-2021-23337, a high-severity command injection issue. Can you fix this vulnerability?",
+      "expected_output": "The skill runs npm audit --json to confirm the finding, identifies lodash as a direct dependency, uses npm install to upgrade it to the patched version (4.17.21), and re-runs the audit to confirm the vulnerability is gone. Because this is a direct package upgrade, no security-overrides.json entry is added.",
+      "files": [],
+      "expectations": [
+        "The skill runs 'npm audit --json' (or equivalent) to detect the vulnerability",
+        "The skill uses 'npm install lodash@<patched-version>' (not a direct package.json edit) to perform the upgrade",
+        "The skill re-runs the audit to confirm the advisory is resolved",
+        "No security-overrides.json entry is required for direct package upgrades"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "My project flags minimist 1.2.5 for CVE-2021-44906, a prototype pollution vulnerability. minimist is NOT a direct dependency in my package.json — it is pulled in transitively by mocha. Please fix this.",
+      "expected_output": "The skill confirms minimist is transitive (not in direct dependencies), determines the safe patched version (1.2.6), adds an 'overrides' entry to package.json forcing minimist to 1.2.6, runs npm install to apply the override, re-runs the audit to confirm the vulnerability is gone, and creates or updates security-overrides.json with an entry containing override-type, advisory IDs, pulled-by (mocha), fixed-version, and reason fields.",
+      "files": [],
+      "expectations": [
+        "The skill confirms minimist is a transitive (not direct) dependency before acting",
+        "The skill adds an 'overrides' entry to package.json forcing minimist to the safe version (not a direct dependency upgrade)",
+        "The skill runs 'npm install' to apply the override",
+        "The skill re-runs the audit to confirm the vulnerability is resolved",
+        "A security-overrides.json entry is created with 'override-type': 'transitive'",
+        "The entry includes a 'pulled-by' field identifying mocha as the parent dependency",
+        "The entry includes advisory, fixed-version, and reason fields",
+        "The skill does NOT remove mocha or any other direct dependency"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "About a year ago we added ansi-regex to our package.json overrides field to fix a transitive CVE. The security-overrides.json entry says it was pulled by jest-circus. We've since upgraded jest to version 29. Please check if the ansi-regex override is still needed and remove it if it's safe to do so.",
+      "expected_output": "The skill locates the ansi-regex entry in security-overrides.json, removes the 'ansi-regex' key from the 'overrides' field in package.json, runs npm install, and re-runs the audit. Because jest 29 now bundles a safe ansi-regex version, the scan is clean and both the package.json override and the security-overrides.json entry are permanently removed.",
+      "files": [],
+      "expectations": [
+        "The skill locates the existing security-overrides.json entry for ansi-regex to identify the stale override",
+        "The skill removes the 'ansi-regex' key from the 'overrides' field in package.json",
+        "The skill runs 'npm install' after removal",
+        "The skill re-runs the audit to verify no vulnerability reappears",
+        "If the audit is clean, the security-overrides.json entry for ansi-regex is also removed",
+        "If the vulnerability reappears after removal, the skill restores the override entry and reports that it is still required"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Can you do a full vulnerability audit of my project and fix everything you find? I have both direct and transitive vulnerabilities according to the Dependabot alerts at https://github.com/acme/myapp/security/dependabot.",
+      "expected_output": "The skill detects the package manager (npm/yarn/pnpm) from the lock file, runs a full audit, triages findings into direct and transitive categories, remediates each one sequentially (upgrading direct packages via CLI and adding overrides for transitive ones), annotates only transitive override changes in security-overrides.json, and runs a final audit to confirm the project is clean. It enriches findings with Dependabot advisory data from the provided URL. After the audit is clean, it runs available test/build scripts to validate the project is still working.",
+      "files": [],
+      "expectations": [
+        "The skill detects the package manager from the lock file before running any commands",
+        "The skill runs the appropriate audit command (npm audit, yarn audit, or pnpm audit) as the primary scan",
+        "The skill processes both direct and transitive vulnerabilities",
+        "The skill remediates direct vulnerabilities with CLI install/upgrade commands",
+        "The skill remediates transitive vulnerabilities by adding override/resolution entries to package.json",
+        "Transitive overrides receive security-overrides.json annotations; direct upgrades do not",
+        "The skill runs a final re-audit to confirm all vulnerabilities are resolved",
+        "The skill enriches findings with advisory data from the provided Dependabot URL",
+        "After the audit is clean, the skill runs available test and/or build scripts to confirm the project is still healthy"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "I have a yarn monorepo with workspaces. The audit shows that nth-check < 2.0.1 is vulnerable to GHSA-rp65-9cf3-cjxr (CVE-2021-3803), an inefficient regex DoS. It is a transitive dependency pulled in by react-scripts in one of the workspace packages. How do I fix this using yarn resolutions?",
+      "expected_output": "The skill detects yarn as the package manager (yarn.lock present) and identifies the workspace structure. Because nth-check is transitive, it adds a 'resolutions' entry to the root package.json forcing nth-check to 2.0.1, runs yarn install from the workspace root to apply the resolution, re-runs yarn audit to confirm the vulnerability is gone, and creates a security-overrides.json at the workspace root documenting the override with the GHSA and CVE advisory IDs, pulled-by (react-scripts), fixed-version (2.0.1), and reason. After the audit is clean, it runs yarn test and/or yarn build (if scripts are defined) to confirm the project is still working.",
+      "files": [],
+      "expectations": [
+        "The skill detects yarn as the package manager from the presence of yarn.lock",
+        "The skill detects the monorepo workspace structure",
+        "The skill adds a 'resolutions' entry (not 'overrides') to the root package.json, as resolutions is the yarn-specific field",
+        "The resolution is placed in the root package.json, not in individual workspace package.json files",
+        "The skill runs 'yarn install' from the workspace root to apply the resolution",
+        "The skill re-runs 'yarn audit' to confirm the vulnerability is resolved",
+        "A security-overrides.json is created at the workspace root with a 'transitive' override entry",
+        "The entry includes both the GHSA and CVE advisory IDs, pulled-by (react-scripts), fixed-version (2.0.1), and a reason",
+        "After the audit is clean, the skill runs available yarn test and/or yarn build scripts to confirm the project is still healthy"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "I use pnpm. My audit flags semver < 7.5.2 for CVE-2022-25883, a ReDoS vulnerability. It is a transitive dependency pulled in by jest. Please fix it.",
+      "expected_output": "The skill detects pnpm as the package manager (pnpm-lock.yaml present), confirms semver is transitive, determines the safe version (7.5.2), adds a 'pnpm.overrides' entry to package.json forcing semver to 7.5.2, runs pnpm install, re-runs pnpm audit to confirm the vulnerability is gone, and creates or updates security-overrides.json with an entry containing override-type, CVE advisory, pulled-by (jest), fixed-version (7.5.2), and reason. After the audit is clean, the skill runs pnpm test and/or pnpm run build (if scripts are defined) to confirm the project is still working.",
+      "files": [],
+      "expectations": [
+        "The skill detects pnpm as the package manager from the presence of pnpm-lock.yaml",
+        "The skill confirms semver is a transitive (not direct) dependency before acting",
+        "The skill adds a 'pnpm.overrides' entry (not 'overrides' or 'resolutions') to package.json",
+        "The skill runs 'pnpm install' to apply the override",
+        "The skill re-runs 'pnpm audit' to confirm the vulnerability is resolved",
+        "A security-overrides.json entry is created with 'override-type': 'transitive'",
+        "The entry includes CVE-2022-25883, pulled-by (jest), fixed-version (7.5.2), and a reason",
+        "The skill does NOT remove jest or any other direct dependency",
+        "After the audit is clean, the skill runs 'pnpm test' and/or 'pnpm run build' to confirm the project is still healthy"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "My npm audit flags follow-redirects for CVE-2023-26159. I need it fixed urgently.",
+      "expected_output": "The skill runs npm audit --json to confirm the finding and determine whether follow-redirects is direct or transitive. It checks npm view follow-redirects versions --json and the npm advisory registry to find whether a patched version exists. If no patched release is available, the skill reports the advisory ID, affected package, current installed version, and that no patched version exists yet. It does not force an unpatched version and suggests monitoring the advisory for a fix.",
+      "files": [],
+      "expectations": [
+        "The skill runs 'npm audit --json' to confirm the finding",
+        "The skill checks available versions via 'npm view follow-redirects versions --json' or npm advisory registry",
+        "If no patched version exists, the skill reports this clearly without making any package.json changes",
+        "The skill does not force an insecure or unreleased version",
+        "The skill provides the advisory ID and current version in its report",
+        "The skill suggests watching the advisory for a fix"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "We already have a security-overrides.json entry for json5 pinned to 1.0.2 to address CVE-2022-46175. We've now learned that version 2.2.3 is actually the proper long-term fix and our package.json override should be updated. Please update the override.",
+      "expected_output": "The skill locates the existing json5 entry in security-overrides.json, updates the 'overrides' value in package.json from 1.0.2 to 2.2.3, runs npm install, re-runs the audit to confirm the vulnerability is gone, and updates the fixed-version field in the existing security-overrides.json entry to 2.2.3. No duplicate entry is added.",
+      "files": [],
+      "expectations": [
+        "The skill locates the existing security-overrides.json entry for json5",
+        "The skill updates the existing package.json override version from 1.0.2 to 2.2.3 rather than adding a duplicate entry",
+        "The skill runs 'npm install' to apply the updated override",
+        "The skill re-runs the audit to confirm the vulnerability is resolved",
+        "The existing security-overrides.json entry is updated in place (fixed-version changed to 2.2.3); no duplicate entry is added",
+        "The skill does NOT downgrade the version — a higher fixed-version always wins"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "I've just fixed a vulnerability in my npm project by upgrading a package. The audit is now clean. Please validate that the project still builds and runs correctly.",
+      "expected_output": "The skill runs 'npm run' to list available scripts. It then runs 'npm test' if a test script is defined, and 'npm run build' if a build script is defined. If both pass, it confirms the project is healthy. If a start script is defined and no build script exists, it runs 'npm start' briefly as a smoke test. If any step fails, it checks whether the failure is pre-existing (by noting whether it pre-dates the security fix), reports it separately, and does not leave the project in a broken state.",
+      "files": [],
+      "expectations": [
+        "The skill runs 'npm run' (or equivalent) to discover available scripts before attempting to run them",
+        "The skill runs 'npm test' if a test script is defined and reports pass/fail",
+        "The skill runs 'npm run build' if a build script is defined and reports pass/fail",
+        "If no test or build script is defined, the skill attempts 'npm start' as a smoke test",
+        "If a step fails, the skill investigates whether the failure pre-dates the security fix",
+        "The skill does not leave the project in a broken state",
+        "The skill reports a clear success or failure summary at the end"
+      ]
+    }
+  ]
+}

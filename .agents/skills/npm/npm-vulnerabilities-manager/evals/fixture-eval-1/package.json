@@ -1,0 +1,8 @@
+{
+  "name": "eval-1-project",
+  "version": "1.0.0",
+  "description": "Test project for CVE-2021-23337 (lodash direct dependency)",
+  "dependencies": {
+    "lodash": "4.17.4"
+  }
+}
