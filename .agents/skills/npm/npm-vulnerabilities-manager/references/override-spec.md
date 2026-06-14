@@ -96,7 +96,7 @@ Because `package.json` is JSON and does not support inline comments, annotations
 1. **security-overrides.json location**: Always at the project root (or workspace root for monorepos). Never inside individual workspace package directories.
 2. **package.json override location**: For workspaces, overrides/resolutions always go in the root `package.json`, not in individual workspace `package.json` files.
 3. **One entry per package+advisory pair**: Each distinct combination of `package` and `advisory` gets its own entry. If one package has two separate advisories, create two entries.
-4. **Ordering**: Append new entries to the end of the `"overrides"` array in `security-overrides.json`. No required ordering, but keep the file sorted by `package` name for readability when multiple entries exist.
+4. **Ordering**: Keep the file sorted by `package` name for readability when multiple entries exist; insert new entries into the correct sorted position.
 5. **Empty file**: If all overrides are removed, leave `security-overrides.json` with `{ "overrides": [] }` rather than deleting the file.
 
 ---
