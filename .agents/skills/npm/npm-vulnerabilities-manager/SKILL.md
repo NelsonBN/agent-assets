@@ -1,6 +1,7 @@
 ---
 name: npm-vulnerabilities-manager
 description: Detect and fix npm/yarn/pnpm security vulnerabilities. Use for CVE or GHSA advisories, npm/yarn/pnpm audit results, Dependabot alerts, transitive dependency vulnerabilities, and security scans on JavaScript/Node.js projects. Covers audit-based detection, direct and transitive remediation, security-overrides.json annotation, GitHub advisory enrichment, build/runtime validation, and stale override cleanup.
+license: MIT
 ---
 
 # npm Vulnerabilities Manager
