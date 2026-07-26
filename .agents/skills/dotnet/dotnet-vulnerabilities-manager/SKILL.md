@@ -1,6 +1,7 @@
 ---
 name: dotnet-vulnerabilities-manager
 description: Detect and fix NuGet security vulnerabilities in .NET projects. Always use this skill when the user mentions: CVE in .NET, vulnerable NuGet packages, dotnet list package --vulnerable, dependabot alerts on a .NET repo, GHSA advisory for a NuGet package, transitive vulnerability in csproj, NuGet security patch, audit NuGet packages for security, fix CVE in project, security scan results, or when a GitHub Dependabot alert or security advisory points at a NuGet dependency. Covers the full remediation workflow: CLI-based detection, direct and transitive package remediation with dotnet commands, traceability comments for transitive override entries in project files, enrichment via external advisories (GitHub Dependabot, GitHub Advisory Database, NuGet advisories), and automatic cleanup of stale transitive overrides that are no longer necessary.
+license: MIT
 ---
 
 # .NET Vulnerabilities Manager
