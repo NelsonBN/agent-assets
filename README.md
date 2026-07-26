@@ -30,6 +30,9 @@ Here are some of the skills created by me, or inspired by other communities' ski
 #### NPM Skills
 * [NPM Vulnerabilities Manager](./.agents/skills/npm/npm-vulnerabilities-manager/SKILL.md) - A skill to detect and fix NPM security vulnerabilities in JavaScript/TypeScript projects. Covers direct and transitive CVE/GHSA remediation via npm/yarn/pnpm CLI, standardized security-fix traceability annotations in security-overrides.json, external advisory lookup (GitHub Dependabot, GitHub Advisory Database, npm advisories), and automatic cleanup of stale transitive overrides.
 
+#### Git Skills
+* [Git Commit](./.agents/skills/git-commit/SKILL.md) - A skill to create high-quality git commits that follow Conventional Commits and semantic-release best practices. Inspects the working tree, splits changes into logical commits, stages precisely, and writes well-formed conventional commit messages (type(scope): subject, body, footers).
+
 
 ### Other skills (Famous and Relevant)
 Other famous and relevant skills that I find useful:
